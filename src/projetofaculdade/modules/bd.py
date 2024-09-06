@@ -1,5 +1,6 @@
 import os
 from pymongo import MongoClient
+from bson.objectid import ObjectId
 from dotenv import load_dotenv
 
 # Carregando variáveis de ambiente do arquivo .env
@@ -22,14 +23,19 @@ def listar_clientes():
     for doc in collection.find():
         clientes.append(doc)
 
-# Função para inserir um novo cliente
-def novo_cliente(nome, idade, quantidade):
-    collection.insert_one({
-        "nome": nome, 
-        "idade": int(idade), 
-        "quantidade": int(quantidade)
-    })
-    print('Novo cliente adicionado!')
+# Função para inserir ou modificar um cliente
+def novo_cliente(id, nome, telefone, endereço, vendas):
+    print(id)
+    if id != 0:
+        clienteExiste = collection.find_one({"_id": ObjectId(id)})
+        collection.update_one({"_id": ObjectId(id)}, {"$set": {"nome": nome, "end": endereço, "vendas": vendas}})
+    else:
+        collection.insert_one({
+            "nome": nome,
+            "telefone": telefone,
+            "end": endereço,
+            "vendas": int(vendas)
+        })
 
 # Função para excluir um cliente pelo ID
 def excluir_cliente(id):
